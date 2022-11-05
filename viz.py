@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'viz.ui'
+# Form implementation generated from reading ui file 'test3.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.7
 #
@@ -9,22 +9,56 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from matplotlib import pyplot as plt
+
+import mnist_cnn_torch
+
+import numpy as np
 
 
 class Ui_MainWindow(object):
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
+        MainWindow.resize(1600, 1200)
+
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(370, 360, 81, 26))
-        self.pushButton.setObjectName("pushButton")
+
         self.photo = QtWidgets.QLabel(self.centralwidget)
-        self.photo.setGeometry(QtCore.QRect(120, 50, 621, 261))
+        self.photo.setGeometry(QtCore.QRect(240, 30, 1000, 400))
+        self.photo.setText("")
+        self.photo.setPixmap(QtGui.QPixmap("img.png"))
         self.photo.setScaledContents(True)
         self.photo.setObjectName("photo")
+
+        self.photo2 = QtWidgets.QLabel(self.centralwidget)
+        self.photo2.setGeometry(QtCore.QRect(240, 150, 1000, 400))
+        self.photo2.setText("")
+        self.photo2.setPixmap(QtGui.QPixmap("img2.png"))
+        self.photo2.setScaledContents(True)
+        self.photo2.setObjectName("photo2")
+
+        self.photo3 = QtWidgets.QLabel(self.centralwidget)
+        self.photo3.setGeometry(QtCore.QRect(240, 600, 1000, 400))
+        self.photo3.setText("")
+        self.photo3.setPixmap(QtGui.QPixmap("img3.png"))
+        self.photo3.setScaledContents(True)
+        self.photo3.setObjectName("photo3")
+
+        self.photo4 = QtWidgets.QLabel(self.centralwidget)
+        self.photo4.setGeometry(QtCore.QRect(240, 1000, 1000, 400))
+        self.photo4.setText("")
+        self.photo4.setPixmap(QtGui.QPixmap("img4.png"))
+        self.photo4.setScaledContents(True)
+        self.photo4.setObjectName("photo4")
+
+        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton.setGeometry(QtCore.QRect(90, 400, 201, 61))
+        self.pushButton.setObjectName("pushButton")
+
         MainWindow.setCentralWidget(self.centralwidget)
+
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
         self.menubar.setObjectName("menubar")
@@ -36,11 +70,65 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        self.pushButton.clicked.connect(self.evt_btnStart_clicked)
+
+        self.worker = mnist_cnn_torch.WorkerThread()
+
+    def evt_btnStart_clicked(self):
+        self.worker.start()
+        self.worker.update_progress.connect(self.evt_update_progress)
+
+    def evt_update_progress(self, val):
+        """
+        plt.figure(figsize=(40, 34))
+        img1 = val[4].weight.detach().numpy()
+        plt.imsave("img.png", img1)
+        self.photo.setPixmap(QtGui.QPixmap("img.png"))
+        """
+
+        plt.figure(figsize=(20, 17), frameon=False)
+        plt.imshow(val[3].weight.detach().numpy())
+        plt.axis('off')
+        plt.savefig("img.png")
+        self.photo.setPixmap(QtGui.QPixmap("img.png"))
+
+        plt.figure(figsize=(20, 17), frameon=False)
+        plt.imshow(val[4].weight.detach().numpy())
+        plt.axis('off')
+        plt.savefig("img2.png")
+        self.photo2.setPixmap(QtGui.QPixmap("img2.png"))
+
+        plt.figure(figsize=(20, 17), frameon=False)
+        plt.axis('off')
+        A = np.zeros((10, 25))
+        k = 0
+        for i in range(2):
+            for j in range(5):
+                A[5 * i:5 * (i + 1), 5 * j:5 * (j + 1)] = val[0].weight.detach().numpy()[k][0]
+                k += 1
+        plt.imshow(A)
+        plt.savefig("img3.png")
+        self.photo3.setPixmap(QtGui.QPixmap("img3.png"))
+
+        plt.figure(figsize=(20, 17), frameon=False)
+        plt.axis('off')
+        A = np.zeros((20, 25))
+        k = 0
+        for i in range(4):
+            for j in range(5):
+                A[5 * i:5 * (i + 1), 5 * j:5 * (j + 1)] = \
+                val[1].weight.detach().numpy()[k][0]
+                k += 1
+        plt.imshow(A)
+        plt.savefig("img4.png")
+        self.photo4.setPixmap(QtGui.QPixmap("img4.png"))
+
+        plt.close('all')
+
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.pushButton.setText(_translate("MainWindow", "Start"))
-        self.photo.setText(_translate("MainWindow", "TextLabel"))
+        self.pushButton.setText(_translate("MainWindow", "image 1"))
 
 
 if __name__ == "__main__":
