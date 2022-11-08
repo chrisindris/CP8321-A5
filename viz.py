@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import matplotlib.colors
 # Form implementation generated from reading ui file 'test3.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.7
@@ -20,42 +20,55 @@ class Ui_MainWindow(object):
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1600, 1200)
+        MainWindow.resize(1600, 1400)
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
 
-        self.photo = QtWidgets.QLabel(self.centralwidget)
-        self.photo.setGeometry(QtCore.QRect(240, 30, 1000, 400))
-        self.photo.setText("")
-        self.photo.setPixmap(QtGui.QPixmap("img.png"))
-        self.photo.setScaledContents(True)
-        self.photo.setObjectName("photo")
+        # Titles and Menu
 
-        self.photo2 = QtWidgets.QLabel(self.centralwidget)
-        self.photo2.setGeometry(QtCore.QRect(240, 150, 1000, 400))
-        self.photo2.setText("")
-        self.photo2.setPixmap(QtGui.QPixmap("img2.png"))
-        self.photo2.setScaledContents(True)
-        self.photo2.setObjectName("photo2")
+        self.label_title = self.paint_label(10, -40, 341, 131,
+                                            "label_title", 27)
 
-        self.photo3 = QtWidgets.QLabel(self.centralwidget)
-        self.photo3.setGeometry(QtCore.QRect(240, 600, 1000, 400))
-        self.photo3.setText("")
-        self.photo3.setPixmap(QtGui.QPixmap("img3.png"))
-        self.photo3.setScaledContents(True)
-        self.photo3.setObjectName("photo3")
+        self.label_weights = self.paint_label(485, -40, 341, 131,
+                                            "label_weights", 20)
 
-        self.photo4 = QtWidgets.QLabel(self.centralwidget)
-        self.photo4.setGeometry(QtCore.QRect(240, 1000, 1000, 400))
-        self.photo4.setText("")
-        self.photo4.setPixmap(QtGui.QPixmap("img4.png"))
-        self.photo4.setScaledContents(True)
-        self.photo4.setObjectName("photo4")
+        self.label_architecture = self.paint_label(850, -40, 341, 131,
+                                              "label_architecture", 20)
+
 
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(90, 400, 201, 61))
+        self.pushButton.setGeometry(QtCore.QRect(0, 100, 201, 61))
         self.pushButton.setObjectName("pushButton")
+
+        # Photos (Dynamic) + Labels
+
+        self.conv1_photo = \
+            self.paint_image(370, 100, 300, 255, "img4.png", "conv1_photo")
+        self.label_conv1_photo = self.paint_label(410, 0, 300, 255,
+                                                   "label_conv1_photo", 12)
+
+        self.conv2_photo = \
+            self.paint_image(370, 350, 300, 255, "img3.png", "conv2_photo")
+        self.label_conv2_photo = self.paint_label(410, 295, 300, 255,
+                                                  "label_conv2_photo", 12)
+
+        self.lin1_photo = \
+            self.paint_image(210, 420, 600, 800, "img.png", "lin1_photo")
+        self.label_lin1_photo = self.paint_label(290, 630, 300, 255,
+                                                  "label_lin1_photo", 12)
+
+        self.lin2_photo = \
+            self.paint_image(210, 750, 600, 510, "img2.png", "lin2_photo")
+        self.label_lin2_photo = self.paint_label(285, 820, 300, 255,
+                                                 "label_lin2_photo", 12)
+
+        # Photos (Static)
+
+        self.architecture_photo = \
+            self.paint_image(800, 80, round(286 * 0.8), round(1436 * 0.8),
+                             "./files/architecture.png",
+                             "architecture_photo")
 
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -79,24 +92,18 @@ class Ui_MainWindow(object):
         self.worker.update_progress.connect(self.evt_update_progress)
 
     def evt_update_progress(self, val):
-        """
-        plt.figure(figsize=(40, 34))
-        img1 = val[4].weight.detach().numpy()
-        plt.imsave("img.png", img1)
-        self.photo.setPixmap(QtGui.QPixmap("img.png"))
-        """
 
-        plt.figure(figsize=(20, 17), frameon=False)
+        plt.figure(figsize=(20, 17), frameon=False)  # 20, 17
         plt.imshow(val[3].weight.detach().numpy())
         plt.axis('off')
         plt.savefig("img.png")
-        self.photo.setPixmap(QtGui.QPixmap("img.png"))
+        self.lin1_photo.setPixmap(QtGui.QPixmap("img.png"))
 
         plt.figure(figsize=(20, 17), frameon=False)
         plt.imshow(val[4].weight.detach().numpy())
         plt.axis('off')
         plt.savefig("img2.png")
-        self.photo2.setPixmap(QtGui.QPixmap("img2.png"))
+        self.lin2_photo.setPixmap(QtGui.QPixmap("img2.png"))
 
         plt.figure(figsize=(20, 17), frameon=False)
         plt.axis('off')
@@ -108,7 +115,7 @@ class Ui_MainWindow(object):
                 k += 1
         plt.imshow(A)
         plt.savefig("img3.png")
-        self.photo3.setPixmap(QtGui.QPixmap("img3.png"))
+        self.conv2_photo.setPixmap(QtGui.QPixmap("img3.png"))
 
         plt.figure(figsize=(20, 17), frameon=False)
         plt.axis('off')
@@ -121,14 +128,42 @@ class Ui_MainWindow(object):
                 k += 1
         plt.imshow(A)
         plt.savefig("img4.png")
-        self.photo4.setPixmap(QtGui.QPixmap("img4.png"))
+        self.conv1_photo.setPixmap(QtGui.QPixmap("img4.png"))
 
         plt.close('all')
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.pushButton.setText(_translate("MainWindow", "image 1"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "CP8321 A5"))
+
+        self.label_title.setText(_translate("MainWindow", "MNIST CNN in Torch"))
+        self.label_weights.setText(_translate("MainWindow", "Weights"))
+        self.label_architecture.setText(_translate("MainWindow", "Architecture"))
+
+        self.pushButton.setText(_translate("MainWindow", "Train"))
+
+        self.label_conv1_photo.setText(_translate("MainWindow", "First Conv Layer: 20 5x5 filters"))
+        self.label_conv2_photo.setText(_translate("MainWindow", "Second Conv Layer: 10 5x5 filters"))
+        self.label_lin1_photo.setText(_translate("MainWindow", "First Linear Layer: 50x320 weights"))
+        self.label_lin2_photo.setText(_translate("MainWindow", "Second Linear Layer: 10x50 weights"))
+
+    def paint_image(self, x, y, w, h, default, name):
+        img = QtWidgets.QLabel(self.centralwidget)
+        img.setGeometry(QtCore.QRect(x, y, w, h))
+        img.setText("")
+        img.setPixmap(QtGui.QPixmap(default))
+        img.setScaledContents(True)
+        img.setObjectName(name)
+        return img
+
+    def paint_label(self, x, y, w, h, name, font_size):
+        lab = QtWidgets.QLabel(self.centralwidget)
+        lab.setGeometry(QtCore.QRect(x, y, w, h))
+        lab.setObjectName(name)
+        font_title = QtGui.QFont()
+        font_title.setPointSize(font_size)
+        lab.setFont(font_title)
+        return lab
 
 
 if __name__ == "__main__":
